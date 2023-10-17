@@ -24,12 +24,12 @@ local CHUNK_MODULES = {
     SSTR = require(Chunks.SSTR)
 }
 
-function Chunk(buffer, chunkIndex)
+function Chunk(buffer: Types.Buffer, chunkIndex: number): Types.Chunk
     local chunk = {}
     chunk.InternalID = chunkIndex
     chunk.Header = buffer:read(4)
     if not VALID_CHUNK_IDENTIFIERS[chunk.Header] then
-        error("Invalid chunk identifier {chunk.Header} on chunk id {chunkIndex}")
+        error(`Invalid chunk identifier {chunk.Header} on chunk id {chunkIndex}`)
     end
     local data
 
@@ -47,9 +47,7 @@ function Chunk(buffer, chunkIndex)
         data = buffer:read(decompressed)
     else
         if zstd_check == ZSTD_HEADER then
-            error(
-                "Chunk id {chunkIndex} of identifier {chunk.Header} is a ZSTD compressed chunk and cannot be decompressed"
-            )
+            error(`Chunk id {chunkIndex} of identifier {chunk.Header} is a ZSTD compressed chunk and cannot be decompressed`)
         end
         data = lz4(buffer:read(compressed + 12))
     end
@@ -63,7 +61,7 @@ function Chunk(buffer, chunkIndex)
     return chunk
 end
 
-local function procChunkType(chunkStore, id, rbxm)
+function procChunkType(chunkStore: {[string]: {Types.Chunk}}, id: string, rbxm: Types.Rbxm)
     local chunks = chunkStore[id]
     local f = CHUNK_MODULES[id]
 
@@ -74,7 +72,7 @@ local function procChunkType(chunkStore, id, rbxm)
     end
 end
 
-local function rbxm(buffer)
+function rbxm(buffer: string): Types.Rbxm
     local rbxmBuffer = Buffer(buffer, false)
 
     -- read signature data

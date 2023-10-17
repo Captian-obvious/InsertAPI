@@ -353,11 +353,64 @@ function InsertCloud:LoadAsset(url,key,id)
             return Clone
         else
             New = url..key..id
-                request = HTTPS:RequestAsync({
+            request = HTTPS:RequestAsync({
                 Url = New,
                 Method = 'GET',
                 Headers = {},
             })
+        end
+    end
+    if request.StatusCode==200 then
+        local Response
+        local Instances
+        local Status, Error =pcall(function()
+            --Pcall incase of error
+            Response = HTTPS:RequestAsync({
+                Url = New,
+                Method = 'GET',
+                Headers = {},
+            })
+            Instances = Response.instances
+            LoadModel(Model, Model, Instances)
+            local XSum, XTot, ZSum, ZTot, YLow = 0, 0, 0, 0, math.huge
+            local function GetCent(Par)
+                for i, v in ipairs(Par:GetChildren()) do
+                    if v:IsA("BasePart") then
+                        XTot = XTot + 1
+                        ZTot = ZTot + 1
+                        XSum = XSum + v.Position.X
+                        ZSum = ZSum + v.Position.Z
+                        if v.Position.Y - v.Size.Y / 2 < YLow then
+                            YLow = v.Position.Y - v.Size.Y / 2
+                        end
+                    end
+                    GetCent(v)
+                end
+            end
+            GetCent(Model)
+            local Center = Instance.new("Part")
+            Center.Parent = Model
+            Center.Anchored = true
+            Center.Locked = true
+            Center.CanCollide = false
+            Center.Transparency = 1
+            Center.Size = Vector3.new(0.05, 0.05, 0.05)
+            Center.Name = "CenterOfModel"
+            Center.CFrame = CFrame.new(XSum / XTot, YLow, ZSum / ZTot)
+            Model.PrimaryPart = Center
+            local NewCache = Model:Clone()
+            NewCache.Parent = ServerCache
+            InitModel(Model, Parent, Pos, Settings)
+        end)
+        
+        if Status ~= true then
+            Model:Destroy()
+            return nil
+        else
+            if _Settings.CompileAssetAfterLoad then
+                self:CompileAsset(Model)
+            end
+            return Model
         end
     end
 end

@@ -317,9 +317,35 @@ function InitModel(Model, Parent, Pos, Settings)
     Model.Parent = Parent or workspace
 end
 
-function module:LoadAsset(url,apikey,id)
-    local dl_url = url..apikey..id
+function InsertCloud:LoadAsset(url,key,id)
+    if type(url) ~= "string" then
+        return error("URL Parameter is invalid, must be a valid string")
+    end
+    if type(key) ~= "string" then
+        return error("Key Parameter is invalid, must be a valid string")
+    end
     
+    Settings = Settings or _Settings.DefaultSettings
+    Pos = Pos or _Settings.DefaultPos
+    Parent = Parent or _Settings.DefaultParent
+    
+    id = tostring(id)
+    
+    local Model = Instance.new("Model")
+    Model.Parent = Replicated
+    Model.Name = id
+    
+    local New
+    local Get
+    local FindCache = ServerCache:FindFirstChild(id)
+    if FindCache==nil then
+        New = url ..key..id
+        request = HTTPS:RequestAsync({
+            Url = New,
+            Method = 'GET',
+            Headers = {},
+        })
+    end
 end
 
 return InsertCloud

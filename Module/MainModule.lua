@@ -339,12 +339,15 @@ function InsertCloud:LoadAsset(url,key,id)
     local Get
     local FindCache = ServerCache:FindFirstChild(id)
     if FindCache==nil then
-        New = url ..key..id
+        New = url..key..id
         request = HTTPS:RequestAsync({
             Url = New,
             Method = 'GET',
             Headers = {},
         })
+        if request.StatusCode==200 then
+            -- does somethin idk
+        end
     end
 end
 

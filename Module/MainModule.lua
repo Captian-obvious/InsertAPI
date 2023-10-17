@@ -345,9 +345,24 @@ function InsertCloud:LoadAsset(url,key,id)
             Method = 'GET',
             Headers = {},
         })
+    else
+        if Settings.LoadCache == true then
+            Model:Destroy()
+            local Clone = FindCache:Clone()
+            InitModel(Clone, Parent, Pos, Settings)
+            return Clone
+        else
+            New = URL .. Key .. "/" .. ID
+            Get = HTTP:GetAsync(New)
+        end
     end
     if request.StatusCode==200 then
-        -- does somethin idk
+        New = url..key..id
+        request = HTTPS:RequestAsync({
+            Url = New,
+            Method = 'GET',
+            Headers = {},
+        })
     end
 end
 

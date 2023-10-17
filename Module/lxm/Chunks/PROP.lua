@@ -5,15 +5,13 @@ local FACES_BIT_FLAG = {}
 local AXES_BIT_FLAG = {}
 
 local function GetEnumValFromNumber(enum: Enum, num: number): EnumItem
-  local enums = enum:GetEnumItems()
-
-  for _, v in enums do
-    if v.Value == num then
-      return v
+    local enums = enum:GetEnumItems()
+    for _, v in enums do
+        if v.Value == num then
+            return v
+        end
     end
-  end
-
-  return enums[1]
+    return enums[1]
 end
 
 local function parseBitFlag<T>(byte: number, bitFlag: {T}): T
@@ -33,120 +31,89 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
     local classref = rbxm.ClassRefs[classID]
     local refs = classref.Refs
     local sizeof = classref.Sizeof
-  
     local name = BasicTypes.String(buffer)
     local optTypeIdCheck = string.byte(buffer:read(1, false)) == 0x1E
     if optTypeIdCheck then
-      -- although its only be spotted for CFrame, i do believe 0x1E will be used for
-      -- other optional types in the future, this future proofs that case
-      buffer:seek(1)
+        -- although its only be spotted for CFrame, i do believe 0x1E will be used for
+        -- other optional types in the future, this future proofs that case
+        buffer:seek(1)
     end
-  
     local typeID = string.byte(buffer:read())
-  
     local properties = {}
-  
     if typeID == 0x01 or typeID == 0x1D then
-      -- String, Bytecode
-      for i = 1, sizeof do
-        properties[i] = BasicTypes.String(buffer)
-      end
-  
+        -- String, Bytecode
+        for i = 1, sizeof do
+          properties[i] = BasicTypes.String(buffer)
+        end
     elseif typeID == 0x02 then
-      -- Boolean
-      for i = 1, sizeof do
-        properties[i] = buffer:read() ~= "\0"
-      end
-  
+        -- Boolean
+        for i = 1, sizeof do
+          properties[i] = buffer:read() ~= "\0"
+        end
     elseif typeID == 0x03 then
-      -- Int32
-      properties = BasicTypes.Int32Array(buffer, sizeof)
-  
+        -- Int32
+        properties = BasicTypes.Int32Array(buffer, sizeof)
     elseif typeID == 0x04 then
-      -- RbxFloat32
-      properties = BasicTypes.RbxF32Array(buffer, sizeof)
-  
+        -- RbxFloat32
+        properties = BasicTypes.RbxF32Array(buffer, sizeof)
     elseif typeID == 0x05 then
-      -- Float64
-      for i = 1, sizeof do
-        properties[i] = BasicTypes.Float64(buffer)
-      end
-  
+        -- Float64
+        for i = 1, sizeof do
+            properties[i] = BasicTypes.Float64(buffer)
+        end
     elseif typeID == 0x06 then
-      -- UDim
-      local scale = BasicTypes.RbxF32Array(buffer, sizeof)
-      local offset = BasicTypes.Int32Array(buffer, sizeof)
-  
-      for i = 1, sizeof do
-        properties[i] = UDim.new(scale[i], offset[i])
-      end
-  
+        -- UDim
+        local scale = BasicTypes.RbxF32Array(buffer, sizeof)
+        local offset = BasicTypes.Int32Array(buffer, sizeof)
+        for i = 1, sizeof do
+            properties[i] = UDim.new(scale[i], offset[i])
+        end
     elseif typeID == 0x07 then
-      -- UDim2
-      local scaleX, scaleY = BasicTypes.RbxF32Array(buffer, sizeof), BasicTypes.RbxF32Array(buffer, sizeof)
-      local offsetX, offsetY = BasicTypes.Int32Array(buffer, sizeof), BasicTypes.Int32Array(buffer, sizeof)
-  
-      for i = 1, sizeof do
-        properties[i] = UDim2.new(scaleX[i], offsetX[i], scaleY[i], offsetY[i])
-      end
-  
+        -- UDim2
+        local scaleX, scaleY = BasicTypes.RbxF32Array(buffer, sizeof), BasicTypes.RbxF32Array(buffer, sizeof)
+        local offsetX, offsetY = BasicTypes.Int32Array(buffer, sizeof), BasicTypes.Int32Array(buffer, sizeof)
+    
+        for i = 1, sizeof do
+            properties[i] = UDim2.new(scaleX[i], offsetX[i], scaleY[i], offsetY[i])
+        end
     elseif typeID == 0x08 then
-      -- Ray
-      for i = 1, sizeof do
-        properties[i] = Ray.new(
-        Vector3.new(
-        buffer:readNumber("<f"),
-        buffer:readNumber("<f"),
-        buffer:readNumber("<f")
-        ),
-        Vector3.new(
-        buffer:readNumber("<f"),
-        buffer:readNumber("<f"),
-        buffer:readNumber("<f")
-        )
-        )
-      end
-  
+        -- Ray
+        for i = 1, sizeof do
+            properties[i] = Ray.new(Vector3.new(buffer:readNumber("<f"),buffer:readNumber("<f"),buffer:readNumber("<f")),Vector3.new(buffer:readNumber("<f"),buffer:readNumber("<f"),buffer:readNumber("<f")))
+        end
     elseif typeID == 0x09 then
       -- Faces
-      for i = 1, sizeof do
-        local byte = string.byte(buffer:read())
-        properties[i] = parseBitFlag(byte, FACES_BIT_FLAG)
-      end
-  
+        for i = 1, sizeof do
+            local byte = string.byte(buffer:read())
+            properties[i] = parseBitFlag(byte, FACES_BIT_FLAG)
+        end
     elseif typeID == 0x0A then
-      -- Axes
-      for i = 1, sizeof do
-        local byte = string.byte(buffer:read())
-        properties[i] = parseBitFlag(byte, AXES_BIT_FLAG)
-      end
-  
+        -- Axes
+        for i = 1, sizeof do
+          local byte = string.byte(buffer:read())
+          properties[i] = parseBitFlag(byte, AXES_BIT_FLAG)
+        end
     elseif typeID == 0x0B then
-      -- BrickColor
-      local ints = BasicTypes.unsignedIntArray(buffer, sizeof)
-      for i = 1, sizeof do
-        properties[i] = BrickColor.new(ints[i])
-      end
-  
+        -- BrickColor
+        local ints = BasicTypes.unsignedIntArray(buffer, sizeof)
+        for i = 1, sizeof do
+          properties[i] = BrickColor.new(ints[i])
+        end
     elseif typeID == 0x0C then
-      -- Color3
-      local r = BasicTypes.RbxF32Array(buffer, sizeof)
-      local g = BasicTypes.RbxF32Array(buffer, sizeof)
-      local b = BasicTypes.RbxF32Array(buffer, sizeof)
-  
-      for i = 1, sizeof do
-        properties[i] = Color3.new(r[i], g[i], b[i])
-      end
-  
+        -- Color3
+        local r = BasicTypes.RbxF32Array(buffer, sizeof)
+        local g = BasicTypes.RbxF32Array(buffer, sizeof)
+        local b = BasicTypes.RbxF32Array(buffer, sizeof)
+        for i = 1, sizeof do
+          properties[i] = Color3.new(r[i], g[i], b[i])
+        end
     elseif typeID == 0x0D then
-      -- Vector2
-      local x = BasicTypes.RbxF32Array(buffer, sizeof)
-      local y = BasicTypes.RbxF32Array(buffer, sizeof)
-  
-      for i = 1, sizeof do
-        properties[i] = Vector2.new(x[i], y[i])
-      end
-  
+        -- Vector2
+        local x = BasicTypes.RbxF32Array(buffer, sizeof)
+        local y = BasicTypes.RbxF32Array(buffer, sizeof)
+        for i = 1, sizeof do
+          properties[i] = Vector2.new(x[i], y[i])
+        end
     elseif typeID == 0x0E then
       -- Vector3
       local x = BasicTypes.RbxF32Array(buffer, sizeof)

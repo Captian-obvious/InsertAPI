@@ -43,8 +43,16 @@ class insertserver:
     ##end
 ##end
 
+#INDEX LANDING PAGE
+@app.route('/')
+def index():
+    return """
+    idk what to put here
+    """
+##end
+
 #Downloader.
-@app.route('/api/')
+@app.route('/v1/asset/')
 def download():
     theid = None
     asset_type = None

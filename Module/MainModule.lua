@@ -105,7 +105,7 @@ ValueTypes = {
     ["ColorSequence"] = function(Val, Type)
         local Sequences = {}
         for _, v in ipairs(Val) do
-            local Key = ColorSequenceKeypoint.new(v.Time, ColorFunc(v.Value, "Cplor3"), v.Envelope)
+            local Key = ColorSequenceKeypoint.new(v.Time, ColorFunc(v.Value, "Color3"), v.Envelope)
             table.insert(Sequences, Key)
         end
         local ColSeq = ColorSequence.new(Sequences)
@@ -250,7 +250,7 @@ function LoadModel(Base, ParentObj, Model, Refs)
                         end
                         Refs[Inst.reference] = Object
                         Objects[Object] = Inst
-                        Recursive(Base, Object, Inst.children)
+                        Recursive(Base, Object, Inst.Children)
                     end
                 end
             )

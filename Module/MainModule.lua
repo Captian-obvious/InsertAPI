@@ -51,7 +51,7 @@ if not Replicated:FindFirstChild("GetLink") then
     local GetLink = Instance.new("RemoteFunction", Replicated)
     GetLink.Name = "GetLink"
     GetLink.OnServerInvoke = function(Link)
-        return HTTP:GetAsync(Link)
+        return HTTPS:GetAsync(Link)
     end
 end
 
@@ -363,44 +363,48 @@ function InsertCloud:LoadAsset(url,key,id)
     if request.StatusCode==200 then
         local Response
         local Instances
-        local Status, Error =pcall(function()
+        local Status, Error=pcall(function()
             --Pcall incase of error
-            Response = HTTPS:RequestAsync({
+            New = url..'/assets/v1/'..id
+            request2 = HTTPS:RequestAsync({
                 Url = New,
                 Method = 'GET',
                 Headers = {},
             })
-            Instances = Response.instances
-            LoadModel(Model, Model, Instances)
-            local XSum, XTot, ZSum, ZTot, YLow = 0, 0, 0, 0, math.huge
-            local function GetCent(Par)
-                for i, v in ipairs(Par:GetChildren()) do
-                    if v:IsA("BasePart") then
-                        XTot = XTot + 1
-                        ZTot = ZTot + 1
-                        XSum = XSum + v.Position.X
-                        ZSum = ZSum + v.Position.Z
-                        if v.Position.Y - v.Size.Y / 2 < YLow then
-                            YLow = v.Position.Y - v.Size.Y / 2
+            if request2.StatusCode==200 then
+                local asset = lxm(request2.Body)
+                Instances = asset.Tree
+                LoadModel(Model, Model, Instances)
+                local XSum, XTot, ZSum, ZTot, YLow = 0, 0, 0, 0, math.huge
+                local function GetCent(Par)
+                    for i, v in ipairs(Par:GetChildren()) do
+                        if v:IsA("BasePart") then
+                            XTot = XTot + 1
+                            ZTot = ZTot + 1
+                            XSum = XSum + v.Position.X
+                            ZSum = ZSum + v.Position.Z
+                            if v.Position.Y - v.Size.Y / 2 < YLow then
+                                YLow = v.Position.Y - v.Size.Y / 2
+                            end
                         end
+                        GetCent(v)
                     end
-                    GetCent(v)
                 end
+                GetCent(Model)
+                local Center = Instance.new("Part")
+                Center.Parent = Model
+                Center.Anchored = true
+                Center.Locked = true
+                Center.CanCollide = false
+                Center.Transparency = 1
+                Center.Size = Vector3.new(0.05, 0.05, 0.05)
+                Center.Name = "CenterOfModel"
+                Center.CFrame = CFrame.new(XSum / XTot, YLow, ZSum / ZTot)
+                Model.PrimaryPart = Center
+                local NewCache = Model:Clone()
+                NewCache.Parent = ServerCache
+                InitModel(Model, Parent, Pos, Settings)
             end
-            GetCent(Model)
-            local Center = Instance.new("Part")
-            Center.Parent = Model
-            Center.Anchored = true
-            Center.Locked = true
-            Center.CanCollide = false
-            Center.Transparency = 1
-            Center.Size = Vector3.new(0.05, 0.05, 0.05)
-            Center.Name = "CenterOfModel"
-            Center.CFrame = CFrame.new(XSum / XTot, YLow, ZSum / ZTot)
-            Model.PrimaryPart = Center
-            local NewCache = Model:Clone()
-            NewCache.Parent = ServerCache
-            InitModel(Model, Parent, Pos, Settings)
         end)
         
         if Status ~= true then

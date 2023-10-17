@@ -325,128 +325,134 @@ function InitModel(Model, Parent, Pos, Settings)
     Model.Parent = Parent or workspace
 end
 
-function InsertCloud:LoadAsset(url,key,id)
-    if type(url) ~= "string" then
-        return error("URL Parameter is invalid, must be a valid string")
-    end
-    if type(key) ~= "string" then
-        return error("Key Parameter is invalid, must be a valid string")
-    end
-    
-    Settings = Settings or _Settings.DefaultSettings
-    Pos = Pos or _Settings.DefaultPos
-    Parent = Parent or _Settings.DefaultParent
-    
-    id = tostring(id)
-    
-    local Model = Instance.new("Model")
-    Model.Parent = Replicated
-    Model.Name = id
-    
-    local New
-    local request
-    local FindCache = ServerCache:FindFirstChild(id)
-    if FindCache==nil then
-        New = url..key..id
-        request = HTTPS:RequestAsync({
-            Url = New,
-            Method = 'GET',
-            Headers = {},
-        })
-    else
-        if Settings.LoadCache == true then
-            Model:Destroy()
-            local Clone = FindCache:Clone()
-            InitModel(Clone, Parent, Pos, Settings)
-            return Clone
-        else
-            New = url..key..id
-            request = HTTPS:RequestAsync({
-                Url = New,
-                Method = 'GET',
-                Headers = {},
-            })
-        end
-    end
-    if request.StatusCode==200 then
-        local Response
-        local Instances
-        local Status, Error=pcall(function()
-            --Pcall incase of error
-            New = url..'/assets/v1/'..id
-            request2 = HTTPS:RequestAsync({
-                Url = New,
-                Method = 'GET',
-                Headers = {},
-            })
-            if request2.StatusCode==200 then
-                local lxm = require(script.lxm)
-                local asset = lxm(request2.Body)
-                Instances = asset.Tree
-                LoadModel(Model, Model, Instances)
-                local XSum, XTot, ZSum, ZTot, YLow = 0, 0, 0, 0, math.huge
-                local function GetCent(Par)
-                    for i, v in ipairs(Par:GetChildren()) do
-                        if v:IsA("BasePart") then
-                            XTot = XTot + 1
-                            ZTot = ZTot + 1
-                            XSum = XSum + v.Position.X
-                            ZSum = ZSum + v.Position.Z
-                            if v.Position.Y - v.Size.Y / 2 < YLow then
-                                YLow = v.Position.Y - v.Size.Y / 2
-                            end
-                        end
-                        GetCent(v)
-                    end
-                end
-                GetCent(Model)
-                local Center = Instance.new("Part")
-                Center.Parent = Model
-                Center.Anchored = true
-                Center.Locked = true
-                Center.CanCollide = false
-                Center.Transparency = 1
-                Center.Size = Vector3.new(0.05, 0.05, 0.05)
-                Center.Name = "CenterOfModel"
-                Center.CFrame = CFrame.new(XSum / XTot, YLow, ZSum / ZTot)
-                Model.PrimaryPart = Center
-                local NewCache = Model:Clone()
-                NewCache.Parent = ServerCache
-                InitModel(Model, Parent, Pos, Settings)
-            end
-        end)
-        
-        if Status ~= true then
-            Model:Destroy()
-            return nil
-        else
-            if _Settings.CompileAssetAfterLoad then
-                self:CompileAsset(Model)
-            end
-            return Model
-        end
-    end
+function InsertCloud:LoadAsset(url,apikey,id,Parent, Pos, Settings)
+	local url_dl = url..apikey..id
+	local url_a = 'https://captianobvious.pythonanywhere.com/assets/v1/'..id
+	Settings = Settings or _Settings.DefaultSettings
+	Pos = Pos or _Settings.DefaultPos
+	Parent = Parent or _Settings.DefaultParent
+	local request = HTTPS:RequestAsync({
+		Url = url_dl,
+		Method = "GET",
+		Headers = {},
+	})
+	if (request.StatusCode==200) then
+		local Model = Instance.new("Model")
+		Model.Parent = Replicated
+		Model.Name = id
+		
+		local New;
+		local request2;
+		local FindCache = ServerCache:FindFirstChild(id)
+		if not FindCache then
+			New = url..'assets/v1/'..id
+			request2 = HTTPS:RequestAsync({
+				Url = New,
+				Method = "GET",
+				Headers = {},
+			})
+		else
+			if Settings.LoadCache == true then
+				Model:Destroy()
+				local Clone = FindCache:Clone()
+				InitModel(Clone, Parent, Pos, Settings)
+
+				return Clone
+			else
+				New = url..'assets/v1/'..id
+				request2 = HTTPS:RequestAsync({
+					Url = New,
+					Method = "GET",
+					Headers = {},
+				})
+			end
+		end
+
+		local Instances;
+		--local request2 = HTTPS:RequestAsync({
+		--	Url = url_a,
+		--	Method = "GET",
+		--	Headers = {},
+		--})
+		local Status, Error = pcall(function() --Pcall incase of error
+			local lxm = require(script.lxm)
+			local f = lxm(tostring(request2.Body))
+			print(f.Tree)
+			local tree = f.Tree
+			Instances = tree
+			LoadModel(Model, Model, Instances)
+			local XSum, XTot, ZSum, ZTot, YLow = 0, 0, 0, 0, math.huge
+			local function GetCent(Par)
+				for i,v in ipairs(Par:GetChildren())do
+					if v:IsA("BasePart") then
+						XTot = XTot + 1
+						ZTot = ZTot + 1
+						XSum = XSum + v.Position.X
+						ZSum = ZSum + v.Position.Z
+						if v.Position.Y - v.Size.Y/2 < YLow then
+							YLow = v.Position.Y - v.Size.Y/2
+						end
+					end
+					GetCent(v)
+				end
+			end
+			GetCent(Model)
+			local Center = Instance.new("Part")
+			Center.Parent = Model
+			Center.Anchored = true
+			Center.Locked = true
+			Center.CanCollide = false
+			Center.Transparency = 1
+			Center.Size = Vector3.new(0.05,0.05,0.05)
+			Center.Name = "CenterOfModel"
+			Center.CFrame = CFrame.new(XSum/XTot, YLow, ZSum/ZTot)
+			Model.PrimaryPart = Center
+			local NewCache = Model:Clone()
+			NewCache.Parent = ServerCache
+			InitModel(Model, Parent, Pos, Settings)
+		end)
+
+		if Status ~= true then
+			Model:Destroy()
+			return nil
+		else
+			if _Settings.CompileAssetAfterLoad then
+				self:CompileAsset(Model)
+			end
+			return Model
+		end
+		--if (request2.StatusCode==200) then
+		--	return {Content = tostring(request2.Body),ParentModel=Model}
+		--end
+	end
 end
 
-function InsertCloud:CompileAsset(self, Model, Parent)
-    pcall(function()
-        Model.PrimaryPart:Destroy()
-    end)
-    Model:MakeJoints()
-    for i, v in ipairs(Model:GetDescendants()) do
-        if (v:IsA("Script") or v:IsA("LocalScript")) and v:FindFirstChild("IsDisabled") then
-            pcall(function()
-                v.Disabled = v.IsDisabled.Value
-                v.IsDisabled:Destroy()
-            end)
-        end
-    end
-    local Children = Model:GetChildren()
-    for i, v in ipairs(Children) do -- Ungroups model
-        v.Parent = Parent or _Settings.DefaultCompileParent
-    end
-    Model:Destroy()
-    return unpack(Children)
+function InsertCloud:CompileAsset(asset, Parent)
+	--local Model = asset.ParentModel
+	--local Settings = Settings or _Settings.DefaultSettings
+	--local Pos = Pos or _Settings.DefaultPos
+	--local Parent = Parent or _Settings.DefaultParent
+	--local lxm = require(script.lxm)
+	--local f = lxm(asset.Content)
+	--print(f.Tree)
+	--local tree = f.Tree
+	pcall(function() asset.PrimaryPart:Destroy() end)
+	asset:MakeJoints()
+	for i,v in ipairs(asset:GetDescendants()) do
+		if (v:IsA("Script") or v:IsA("LocalScript")) and v:FindFirstChild("IsDisabled") then
+			pcall(function()
+				v.Disabled = v.IsDisabled.Value
+				v.IsDisabled:Destroy()
+			end)
+		end
+	end
+
+	local Children = asset:GetChildren()
+	for i,v in ipairs(Children) do -- Ungroups model
+		v.Parent = Parent or _Settings.DefaultCompileParent
+	end
+	asset:Destroy()
+	return unpack(Children)
 end
 
 function InsertCloud:LoadCode(self, Code, Type, Parent, Player)

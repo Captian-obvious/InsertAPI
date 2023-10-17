@@ -1,6 +1,6 @@
 local Types = require(script.Parent.Types)
 
-local function Buffer(str, allowOverflows)
+local function Buffer(str, allowOverflows): Types.Buffer
     local Stream = {}
     Stream.Offset = 0
     Stream.Source = str

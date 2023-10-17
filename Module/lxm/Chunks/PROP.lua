@@ -194,105 +194,90 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
         -- Ref
         properties = BasicTypes.RefArray(buffer, sizeof)
     elseif typeID == 0x14 then
-      -- Vector3int16
-      for i = 1, sizeof do
-          properties[i] = Vector3int16.new(
-          buffer:readNumber("<i2"),
-          buffer:readNumber("<i2"),
-          buffer:readNumber("<i2")
-          )
-      end
+        -- Vector3int16
+        for i = 1, sizeof do
+            properties[i] = Vector3int16.new(
+            buffer:readNumber("<i2"),
+            buffer:readNumber("<i2"),
+            buffer:readNumber("<i2")
+            )
+        end
     elseif typeID == 0x15 then
-      -- NumberSequence
-      for i = 1, sizeof do
-        local kpCount = buffer:readNumber("<I4")
-        local kp = table.create(kpCount)
-  
-        for i = 1, kp do
-          table.insert(kp, NumberSequenceKeypoint.new(
-          buffer:readNumber("<f"),
+        -- NumberSequence
+        for i = 1, sizeof do
+          local kpCount = buffer:readNumber("<I4")
+          local kp = table.create(kpCount)
+    
+          for i = 1, kp do
+            table.insert(kp, NumberSequenceKeypoint.new(
+            buffer:readNumber("<f"),
+            buffer:readNumber("<f"),
+            buffer:readNumber("<f")
+            ))
+          end
+          properties[i] = NumberSequence.new(kp)
+      end
+    elseif typeID == 0x16 then
+        -- ColorSequence
+        for i = 1, sizeof do
+            local kpCount = buffer:readNumber("<I4")
+            local kp = table.create(kpCount)
+      
+            for i = 1, kp do
+              table.insert(kp, ColorSequenceKeypoint.new(
+              buffer:readNumber("<f"),
+              Color3.new(
+              buffer:readNumber("<f"),
+              buffer:readNumber("<f"),
+              buffer:readNumber("<f")
+              )
+              ))
+      
+              buffer:readNumber("<f")
+            end
+            properties[i] = ColorSequence.new(kp)
+        end
+    elseif typeID == 0x17 then
+        -- NumberRange
+        for i = 1, sizeof do
+          properties[i] = NumberRange.new(
           buffer:readNumber("<f"),
           buffer:readNumber("<f")
-          ))
+          )
         end
-  
-        properties[i] = NumberSequence.new(kp)
-      end
-  
-    elseif typeID == 0x16 then
-      -- ColorSequence
-      for i = 1, sizeof do
-        local kpCount = buffer:readNumber("<I4")
-        local kp = table.create(kpCount)
-  
-        for i = 1, kp do
-          table.insert(kp, ColorSequenceKeypoint.new(
+    elseif typeID == 0x18 then
+        -- Rect
+        local xmn, ymn = BasicTypes.RbxF32Array(buffer, sizeof), BasicTypes.RbxF32Array(buffer, sizeof)
+        local xmx, ymx = BasicTypes.RbxF32Array(buffer, sizeof), BasicTypes.RbxF32Array(buffer, sizeof)
+        for i = 1, sizeof do
+            properties[i] = Rect.new(Vector2.new(xmn[i], ymn[i]),Vector2.new(xmx[i], ymx[i]))
+        end
+    elseif typeID == 0x19 then
+        -- PhysicalProperties
+        for i = 1, sizeof do
+          if buffer:read() == "\0" then continue end
+    
+          properties[i] = PhysicalProperties.new(
           buffer:readNumber("<f"),
-          Color3.new(
+          buffer:readNumber("<f"),
           buffer:readNumber("<f"),
           buffer:readNumber("<f"),
           buffer:readNumber("<f")
           )
-          ))
-  
-          buffer:readNumber("<f")
         end
-  
-        properties[i] = ColorSequence.new(kp)
-      end
-  
-    elseif typeID == 0x17 then
-      -- NumberRange
-      for i = 1, sizeof do
-        properties[i] = NumberRange.new(
-        buffer:readNumber("<f"),
-        buffer:readNumber("<f")
-        )
-      end
-  
-    elseif typeID == 0x18 then
-      -- Rect
-      local xmn, ymn = BasicTypes.RbxF32Array(buffer, sizeof), BasicTypes.RbxF32Array(buffer, sizeof)
-      local xmx, ymx = BasicTypes.RbxF32Array(buffer, sizeof), BasicTypes.RbxF32Array(buffer, sizeof)
-  
-      for i = 1, sizeof do
-        properties[i] = Rect.new(
-        Vector2.new(
-        xmn[i], ymn[i]
-        ),
-        Vector2.new(
-        xmx[i], ymx[i]
-        )
-        )
-      end
-  
-    elseif typeID == 0x19 then
-      -- PhysicalProperties
-      for i = 1, sizeof do
-        if buffer:read() == "\0" then continue end
-  
-        properties[i] = PhysicalProperties.new(
-        buffer:readNumber("<f"),
-        buffer:readNumber("<f"),
-        buffer:readNumber("<f"),
-        buffer:readNumber("<f"),
-        buffer:readNumber("<f")
-        )
-      end
-  
     elseif typeID == 0x1A then
-      -- Color3int8
-      local r = string.split(buffer:read(sizeof), "")
-      local g = string.split(buffer:read(sizeof), "")
-      local b = string.split(buffer:read(sizeof), "")
-  
-      for i = 1, sizeof do
-        properties[i] = Color3.fromRGB(
-        string.byte(r[i]),
-        string.byte(g[i]),
-        string.byte(b[i])
-        )
-      end
+        -- Color3int8
+        local r = string.split(buffer:read(sizeof), "")
+        local g = string.split(buffer:read(sizeof), "")
+        local b = string.split(buffer:read(sizeof), "")
+    
+        for i = 1, sizeof do
+          properties[i] = Color3.fromRGB(
+          string.byte(r[i]),
+          string.byte(g[i]),
+          string.byte(b[i])
+          )
+        end
   
     elseif typeID == 0x1B then
       -- Int64

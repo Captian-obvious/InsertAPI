@@ -253,21 +253,19 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
   
     -- perform optional prop handle
     if optTypeIdCheck then
-      buffer:read()
-  
-      for i = 1, sizeof do
-        local archivable = buffer:read() ~= "\0"
-        if not archivable then
-          -- null the key (hopefully if OptCFrame returns, it allows null as a prop)
-          properties[i] = nil
+        buffer:read()
+        for i = 1, sizeof do
+            local archivable = buffer:read() ~= "\0"
+            if not archivable then
+                -- null the key (hopefully if OptCFrame returns, it allows null as a prop)
+                properties[i] = nil
+            end
         end
-      end
     end
-  
     -- map to referents
     for i, v in refs do
-      local inst = rbxm.InstanceRefs[v]
-      inst.Properties[name] = properties[i]
+        local inst = rbxm.InstanceRefs[v]
+        inst.Properties[name] = properties[i]
     end
 end
 

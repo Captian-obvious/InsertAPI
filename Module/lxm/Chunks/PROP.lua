@@ -205,18 +205,18 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
     elseif typeID == 0x15 then
         -- NumberSequence
         for i = 1, sizeof do
-          local kpCount = buffer:readNumber("<I4")
-          local kp = table.create(kpCount)
-    
-          for i = 1, kp do
-            table.insert(kp, NumberSequenceKeypoint.new(
-            buffer:readNumber("<f"),
-            buffer:readNumber("<f"),
-            buffer:readNumber("<f")
-            ))
-          end
-          properties[i] = NumberSequence.new(kp)
-      end
+            local kpCount = buffer:readNumber("<I4")
+            local kp = table.create(kpCount)
+      
+            for i = 1, kp do
+              table.insert(kp, NumberSequenceKeypoint.new(
+              buffer:readNumber("<f"),
+              buffer:readNumber("<f"),
+              buffer:readNumber("<f")
+              ))
+            end
+            properties[i] = NumberSequence.new(kp)
+        end
     elseif typeID == 0x16 then
         -- ColorSequence
         for i = 1, sizeof do
@@ -224,26 +224,23 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
             local kp = table.create(kpCount)
       
             for i = 1, kp do
-              table.insert(kp, ColorSequenceKeypoint.new(
-              buffer:readNumber("<f"),
-              Color3.new(
-              buffer:readNumber("<f"),
-              buffer:readNumber("<f"),
-              buffer:readNumber("<f")
-              )
-              ))
-      
-              buffer:readNumber("<f")
+                table.insert(kp, ColorSequenceKeypoint.new(
+                buffer:readNumber("<f"),
+                Color3.new(
+                buffer:readNumber("<f"),
+                buffer:readNumber("<f"),
+                buffer:readNumber("<f")
+                )
+                ))
+        
+                buffer:readNumber("<f")
             end
             properties[i] = ColorSequence.new(kp)
         end
     elseif typeID == 0x17 then
         -- NumberRange
         for i = 1, sizeof do
-          properties[i] = NumberRange.new(
-          buffer:readNumber("<f"),
-          buffer:readNumber("<f")
-          )
+            properties[i] = NumberRange.new(buffer:readNumber("<f"),buffer:readNumber("<f"))
         end
     elseif typeID == 0x18 then
         -- Rect
@@ -255,15 +252,8 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
     elseif typeID == 0x19 then
         -- PhysicalProperties
         for i = 1, sizeof do
-          if buffer:read() == "\0" then continue end
-    
-          properties[i] = PhysicalProperties.new(
-          buffer:readNumber("<f"),
-          buffer:readNumber("<f"),
-          buffer:readNumber("<f"),
-          buffer:readNumber("<f"),
-          buffer:readNumber("<f")
-          )
+            if buffer:read() == "\0" then continue end
+            properties[i] = PhysicalProperties.new(buffer:readNumber("<f"),buffer:readNumber("<f"),buffer:readNumber("<f"),buffer:readNumber("<f"),buffer:readNumber("<f"))
         end
     elseif typeID == 0x1A then
         -- Color3int8
@@ -272,36 +262,32 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
         local b = string.split(buffer:read(sizeof), "")
     
         for i = 1, sizeof do
-          properties[i] = Color3.fromRGB(
-          string.byte(r[i]),
-          string.byte(g[i]),
-          string.byte(b[i])
-          )
+            properties[i] = Color3.fromRGB(
+            string.byte(r[i]),
+            string.byte(g[i]),
+            string.byte(b[i])
+            )
         end
   
     elseif typeID == 0x1B then
-      -- Int64
-      properties = BasicTypes.Int64Array(buffer, sizeof)
-  
+        -- Int64
+        properties = BasicTypes.Int64Array(buffer, sizeof)
     elseif typeID == 0x1C then
-      -- SharedString
-      local strings = BasicTypes.unsignedIntArray(buffer, sizeof)
-      for i = 1, sizeof do
-        local ref = strings[i] + 1
-        properties[i] = rbxm.Strings[ref]
-      end
-  
+        -- SharedString
+        local strings = BasicTypes.unsignedIntArray(buffer, sizeof)
+        for i = 1, sizeof do
+            local ref = strings[i] + 1
+            properties[i] = rbxm.Strings[ref]
+        end
     elseif typeID == 0x20 then
-      -- Font
-      for i = 1, sizeof do
-        local family = BasicTypes.String(buffer)
-        local weight = GetEnumValFromNumber(Enum.FontWeight, buffer:readNumber("<I2"))
-        local style = GetEnumValFromNumber(Enum.FontStyle, string.byte(buffer:read()))
-  
-        BasicTypes.String(buffer) --CachedFaceId
-  
-        properties[i] = Font.new(family, weight, style)
-      end
+        -- Font
+        for i = 1, sizeof do
+            local family = BasicTypes.String(buffer)
+            local weight = GetEnumValFromNumber(Enum.FontWeight, buffer:readNumber("<I2"))
+            local style = GetEnumValFromNumber(Enum.FontStyle, string.byte(buffer:read()))
+            BasicTypes.String(buffer) --CachedFaceId
+            properties[i] = Font.new(family, weight, style)
+        end
     end
   
     -- perform optional prop handle

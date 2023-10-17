@@ -55,7 +55,6 @@ end
 
 function basicTypes.unsignedIntArray(buffer: Types.Buffer, count: number): {number}
     if count < 1 then return {} end
-
     local o = table.create(count)
     local strings = basicTypes.InterleaveArrayWithSize(buffer, count, 4)
     for i = 1, count do
@@ -66,38 +65,31 @@ end
 
 function basicTypes.Int32Array(buffer: Types.Buffer, count: number): {number}
     if count < 1 then return {} end
-
     local o = table.create(count)
     local strings = basicTypes.InterleaveArrayWithSize(buffer, count, 4)
     for i = 1, count do
         o[i] = basicTypes.Int32(strings)
     end
-
     return o
 end
 
 function basicTypes.Int64Array(buffer: Types.Buffer, count: number): {number}
     if count < 1 then return {} end
-
     local o = table.create(count)
     local strings = basicTypes.InterleaveArrayWithSize(buffer, count, 8)
     for i = 1, count do
         o[i] = basicTypes.Int64(strings)
     end
-
     return o
 end
 
 function basicTypes.RbxF32Array(buffer: Types.Buffer, count: number): {number}
     if count < 1 then return {} end
-
     local o = table.create(count)
     local strings = basicTypes.InterleaveArrayWithSize(buffer, count, 4)
-
     for i = 1, count do
         o[i] = basicTypes.Float32(strings)
     end
-
     return o
 end
 

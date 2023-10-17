@@ -199,7 +199,7 @@ local ClassTypes = {
         return Object
     end,
     ["UnionOperation"] = function(ClName, ParentObj, Inst, Properties)
-        --heres how we load unions.
+        --union loader.
     end,
 }
 local PropExceptions = {

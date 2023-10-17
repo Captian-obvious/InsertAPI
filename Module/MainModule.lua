@@ -59,7 +59,8 @@ if not Replicated:FindFirstChild("GetLink") then
         if request.StatusCode==200 then
             return request.Body
         else
-            return warn('HTTP ERROR: '..request.Status..'('..request.StatusCode..')')
+            warn('HTTP ERROR: '..request.Status..'('..request.StatusCode..')')
+            return nil
         end
     end
 end

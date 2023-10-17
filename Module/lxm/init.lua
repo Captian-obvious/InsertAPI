@@ -22,6 +22,8 @@ local CHUNK_MODULES = {
     PRNT = require(Chunks.PRNT),
     PROP = require(Chunks.PROP),
     SSTR = require(Chunks.SSTR)
+
+    --END\0 and SIGN are not processed because they're irrelevant
 }
 
 function Chunk(buffer: Types.Buffer, chunkIndex: number): Types.Chunk

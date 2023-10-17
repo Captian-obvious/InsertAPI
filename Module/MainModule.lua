@@ -3,10 +3,8 @@ local InsertCloud = {}
 _Settings = {
     -- SETTINGS FOR INSERT CLOUD
 
-    SandboxScripts = true, -- Sandboxes the scripts, which can protect your game from malicious scripts.
-    -- If you are inserting only your own models, then you should disable this.
-    DisableScripts = true, -- Disables scripts on load. This is to prevent scripts running
-    -- the moment it is loaded.
+    SandboxScripts = true, -- Sandboxes the scripts, which can protect your game from malicious scripts. If you are inserting only your own models, then you should disable this.
+    DisableScripts = true, -- Disables scripts on load. This is to prevent scripts running the moment it is loaded.
     CompileAssetAfterLoad = false, -- Compiles asset after being loaded.
     UnlockParts = true, -- Unlocks BaseParts in the model. If disabled, it will allow parts to be locked.
     DefaultParent = workspace, -- The default parent for LoadAsset

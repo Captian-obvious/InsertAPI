@@ -51,7 +51,16 @@ if not Replicated:FindFirstChild("GetLink") then
     local GetLink = Instance.new("RemoteFunction", Replicated)
     GetLink.Name = "GetLink"
     GetLink.OnServerInvoke = function(Link)
-        return HTTPS:GetAsync(Link)
+        local request = HTTPS:RequestAsync({
+            Url=Link,
+            Method='GET',
+            Headers={},
+        })
+        if request.StatusCode==200 then
+            return request.Body
+        else
+            return warn('HTTP ERROR: '..request.Status..'('..request.StatusCode..')')
+        end
     end
 end
 

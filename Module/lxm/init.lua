@@ -40,7 +40,7 @@ function Chunk(buffer: Types.Buffer, chunkIndex: number): Types.Chunk
     local zstd_check = string.sub(lz4Header, 13, 16)
 
     if reserved ~= "\0\0\0\0" then
-        error("Invalid chunk header on chunk id {chunkIndex} of identifier {chunk.Header}")
+        error(`Invalid chunk header on chunk id {chunkIndex} of identifier {chunk.Header}`)
     end
 
     if compressed == 0 then

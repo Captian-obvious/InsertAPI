@@ -3,8 +3,6 @@ from flask import Flask,request
 
 app = Flask(__name__)
 
-@app.route('/api/')
-
 def getRequest():
     return request
 ##end
@@ -26,7 +24,11 @@ class insertserver:
                 rawData = r.content
                 asset = open('assets/v1/'+str(assetid), "wb")
                 asset.write(bytearray(rawData))
-                return asset
+                class ret:
+                    Content = asset
+                    Success = True
+                ##end
+                return ret
             else:
                 print('REQUEST_ERROR: '+str(REQUEST.status_code))
                 return {'STATUS_CODE':REQUEST.status_code,'ERROR_MESSAGE':'REQUEST_ERROR: '+str(REQUEST.status_code)}
@@ -41,6 +43,8 @@ class insertserver:
     ##end
 ##end
 
+#Downloader.
+@app.route('/api/')
 def download():
     theid = None
     asset_type = None
@@ -58,8 +62,7 @@ def download():
                 if (theid!=None):
                     asset = insertserver.downloader.downloadAsset(theid)
                     if (asset.Success!=False):
-                        data = asset.Asset
-                        return str(insertserver.compiler.compileAsset(data))
+                        data = asset.Content
                     else:
                         return str(asset)
                     ##endif
@@ -68,4 +71,3 @@ def download():
         ##endif
     ##endif
 ##end
-

@@ -143,8 +143,7 @@ ValueTypes = {
         if number.custom_physics == false then
             return nil
         end
-        local Physical =
-            PhysicalProperties.new(
+        local Physical = PhysicalProperties.new(
             number.density or 1,
             number.friction or 1,
             number.elasticity or 1,
@@ -200,7 +199,10 @@ local ClassTypes = {
             end
         ) or Object.MaxHealth
         return Object
-    end
+    end,
+    ["UnionOperation"] = function(ClName, ParentObj, Inst, Properties)
+        --heres how we load unions.
+    end,
 }
 local PropExceptions = {
     Attachment0 = true,

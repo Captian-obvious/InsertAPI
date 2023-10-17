@@ -381,6 +381,7 @@ function InsertCloud:LoadAsset(url,key,id)
                 Headers = {},
             })
             if request2.StatusCode==200 then
+                local lxm = require(script.lxm)
                 local asset = lxm(request2.Body)
                 Instances = asset.Tree
                 LoadModel(Model, Model, Instances)

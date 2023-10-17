@@ -29,25 +29,25 @@ local function Buffer(str, allowOverflows): Types.Buffer
         return dat
     end
 
-    function Stream.seek(self, len)
+    function Stream.seek(self: Types.Buffer, len: number)
         local len = len or 1
 
         self.Offset = math.clamp(self.Offset + len, 0, self.Length)
         self.IsFinished = self.Offset >= self.Length
     end
 
-    function Stream.append(self, newData)
+    function Stream.append(self: Types.Buffer, newData: string)
         -- adds new data to the end of a stream
         self.Source = self.Source .. newData
         self.Length = string.len(self.Source)
         self:seek(0) --hacky but forces a recalculation of the isFinished flag
     end
 
-    function Stream.toEnd(self)
+    function Stream.toEnd(self: Types.Buffer)
         self:seek(self.Length)
     end
 
-    function Stream.readNumber(self, fmt, shift)
+    function Stream.readNumber(self: Types.Buffer, fmt: string?, shift: boolean?): number
         fmt = fmt or "I1"
         local packsize = string.packsize(fmt)
 

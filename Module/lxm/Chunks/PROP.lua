@@ -97,7 +97,7 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
         -- BrickColor
         local ints = BasicTypes.unsignedIntArray(buffer, sizeof)
         for i = 1, sizeof do
-          properties[i] = BrickColor.new(ints[i])
+            properties[i] = BrickColor.new(ints[i])
         end
     elseif typeID == 0x0C then
         -- Color3
@@ -132,31 +132,30 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
         for i = 1, sizeof do
             local rawOrientation = string.byte(buffer:read())
             if rawOrientation > 0 then
-              local orientID = rawOrientation - 1
-              local R0 = Vector3.fromNormalId(orientID / 6)
-              local R1 = Vector3.fromNormalId(orientID % 6)
-              local R2 =	R0:Cross(R1)
-      
-              matricies[i] = {R0, R1, R2}
+                local orientID = rawOrientation - 1
+                local R0 = Vector3.fromNormalId(orientID / 6)
+                local R1 = Vector3.fromNormalId(orientID % 6)
+                local R2 =	R0:Cross(R1)
+                matricies[i] = {R0, R1, R2}
             else
-              local r00, r01, r02 =
-              buffer:readNumber("<f"),
-              buffer:readNumber("<f"),
-              buffer:readNumber("<f")
-              local r10, r11, r12 =
-              buffer:readNumber("<f"),
-              buffer:readNumber("<f"),
-              buffer:readNumber("<f")
-              local r20, r21, r22 =
-              buffer:readNumber("<f"),
-              buffer:readNumber("<f"),
-              buffer:readNumber("<f")
-      
-              matricies[i] = {
-                Vector3.new(r00, r10, r20),
-                Vector3.new(r01, r11, r21),
-                Vector3.new(r02, r12, r22)
-              }
+                local r00, r01, r02 =
+                buffer:readNumber("<f"),
+                buffer:readNumber("<f"),
+                buffer:readNumber("<f")
+                local r10, r11, r12 =
+                buffer:readNumber("<f"),
+                buffer:readNumber("<f"),
+                buffer:readNumber("<f")
+                local r20, r21, r22 =
+                buffer:readNumber("<f"),
+                buffer:readNumber("<f"),
+                buffer:readNumber("<f")
+        
+                matricies[i] = {
+                  Vector3.new(r00, r10, r20),
+                  Vector3.new(r01, r11, r21),
+                  Vector3.new(r02, r12, r22)
+                }
             end
         end
         -- map interleaved position
@@ -169,44 +168,40 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
             properties[i] = CFrame.fromMatrix(pos, thisMatrix[1], thisMatrix[2], thisMatrix[3])
         end
     elseif typeID == 0x11 then
-      -- Quaternion (i can be a little quicker here by handling it differently)
-      local quaternions = {}
-      for i = 1, sizeof do
-        quaternions[i] = {
-          x = buffer:readNumber("<f"),
-          y = buffer:readNumber("<f"),
-          z = buffer:readNumber("<f"),
-          w = buffer:readNumber("<f")
-        }
-      end
-  
-      local cfX = BasicTypes.RbxF32Array(buffer, sizeof)
-      local cfY = BasicTypes.RbxF32Array(buffer, sizeof)
-      local cfZ = BasicTypes.RbxF32Array(buffer, sizeof)
-  
-      for i = 1, sizeof do
-        local q = quaternions[i]
-        properties[i] = CFrame.new(cfX[i], cfY[i], cfZ[i], q.x, q.y, q.z, q.w)
-      end
-  
+        -- Quaternion (i can be a little quicker here by handling it differently)
+        local quaternions = {}
+        for i = 1, sizeof do
+            quaternions[i] = {
+              x = buffer:readNumber("<f"),
+              y = buffer:readNumber("<f"),
+              z = buffer:readNumber("<f"),
+              w = buffer:readNumber("<f")
+            }
+        end
+    
+        local cfX = BasicTypes.RbxF32Array(buffer, sizeof)
+        local cfY = BasicTypes.RbxF32Array(buffer, sizeof)
+        local cfZ = BasicTypes.RbxF32Array(buffer, sizeof)
+    
+        for i = 1, sizeof do
+            local q = quaternions[i]
+            properties[i] = CFrame.new(cfX[i], cfY[i], cfZ[i], q.x, q.y, q.z, q.w)
+        end
     elseif typeID == 0x12 then
-      -- Enum
-      properties = BasicTypes.unsignedIntArray(buffer, sizeof)
-  
+        -- Enum
+        properties = BasicTypes.unsignedIntArray(buffer, sizeof)
     elseif typeID == 0x13 then
-      -- Ref
-      properties = BasicTypes.RefArray(buffer, sizeof)
-  
+        -- Ref
+        properties = BasicTypes.RefArray(buffer, sizeof)
     elseif typeID == 0x14 then
       -- Vector3int16
       for i = 1, sizeof do
-        properties[i] = Vector3int16.new(
-        buffer:readNumber("<i2"),
-        buffer:readNumber("<i2"),
-        buffer:readNumber("<i2")
-        )
+          properties[i] = Vector3int16.new(
+          buffer:readNumber("<i2"),
+          buffer:readNumber("<i2"),
+          buffer:readNumber("<i2")
+          )
       end
-  
     elseif typeID == 0x15 then
       -- NumberSequence
       for i = 1, sizeof do

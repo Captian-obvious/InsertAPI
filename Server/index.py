@@ -29,9 +29,18 @@ def download():
     
 ##end
 
-#API Primary
+#Assets
 @app.route('/api/v1/asset/')
 def compiler():
 
+##end
+
+#server stuff
+def getParams(url):
+    if (len(url.split('?'))>1):
+        query = url.split('?')[1]
+        params = query.split('&')
+        return params
+    ##endif
 ##end
 

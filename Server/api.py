@@ -21,14 +21,15 @@ class insertserver:
     class downloader:
         def downloadAsset(assetid):
             url = 'https://assetdelivery.roblox.com/v1/asset/?id='+str(assetid)
-            request = requests.get(url)
-            if (request.status_code==200):
-                rawData = request.content
-                f = open('assets/v1/'+str(assetid), "wb")
-                f.write(str(rawData))
-                return {'Asset': f, 'Success': True}
+            r = requests.get(url)
+            if (r.status_code==200):
+                rawData = r.content
+                asset = open('assets/v1/'+str(assetid), "wb")
+                asset.write(bytearray(rawData))
+                return asset
             else:
-                return {'Success':False,'StatusCode': requests.status_code, 'ErrorMessage': requests.status}
+                print('REQUEST_ERROR: '+str(REQUEST.status_code))
+                return {'STATUS_CODE':REQUEST.status_code,'ERROR_MESSAGE':'REQUEST_ERROR: '+str(REQUEST.status_code)}
             ##endif
         ##end
     ##end

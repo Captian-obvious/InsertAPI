@@ -30,22 +30,20 @@ end
 -------------
 
 --INIT
-pcall(
-    function()
-        if Replicated:FindFirstChild("CloudBox") == nil then
-            local c = script.CloudBox:Clone()
-            c.Parent = Replicated
-        end
-        if Replicated:FindFirstChild("Loadstring") == nil then
-            local l = script.Loadstring:Clone()
-            l.Parent = Replicated
-        end
-        if Replicated:FindFirstChild("Templates") == nil then
-            local t = script.Templates:Clone()
-            t.Parent = Replicated
-        end
+pcall(function()
+    if Replicated:FindFirstChild("CloudBox") == nil then
+        local c = script.CloudBox:Clone()
+        c.Parent = Replicated
     end
-)
+    if Replicated:FindFirstChild("Loadstring") == nil then
+        local l = script.Loadstring:Clone()
+        l.Parent = Replicated
+    end
+    if Replicated:FindFirstChild("Templates") == nil then
+        local t = script.Templates:Clone()
+        t.Parent = Replicated
+    end
+end)
 
 if not Replicated:FindFirstChild("GetLink") then
     local GetLink = Instance.new("RemoteFunction", Replicated)

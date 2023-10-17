@@ -430,4 +430,46 @@ function InsertCloud:LoadAsset(url,key,id)
     end
 end
 
+function InsertCloud:CompileAsset(self, Model, Parent)
+    pcall(function()
+        Model.PrimaryPart:Destroy()
+    end)
+    Model:MakeJoints()
+    for i, v in ipairs(Model:GetDescendants()) do
+        if (v:IsA("Script") or v:IsA("LocalScript")) and v:FindFirstChild("IsDisabled") then
+            pcall(function()
+                v.Disabled = v.IsDisabled.Value
+                v.IsDisabled:Destroy()
+            end)
+        end
+    end
+    local Children = Model:GetChildren()
+    for i, v in ipairs(Children) do -- Ungroups model
+        v.Parent = Parent or _Settings.DefaultCompileParent
+    end
+    Model:Destroy()
+    return unpack(Children)
+end
+
+function InsertCloud:LoadCode(self, Code, Type, Parent, Player)
+    local Script = Templates:FindFirstChild(SandboxType .. Type)
+    Script = Script:Clone()
+    if Script:FindFirstChild("Player") then
+        Script.Player.Value = Player
+    end
+    Script.Parent = Parent or workspace
+    Script.LOAD.Value = Code
+    Script.Disabled = false
+end
+function InsertCloud:Credits(self)
+    print("_DEVELOPERS:")
+    for i, v in ipairs(self._DEVELOPERS) do
+        print(v)
+    end
+end
+function InsertCloud:RestartApp(self, URL, Key)
+    URL = URL:sub(0, #URL - 8)
+    HTTPS:GetAsync(URL .. "/restart/" .. Key)
+end
+
 return InsertCloud

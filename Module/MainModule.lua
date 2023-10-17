@@ -352,17 +352,13 @@ function InsertCloud:LoadAsset(url,key,id)
             InitModel(Clone, Parent, Pos, Settings)
             return Clone
         else
-            New = URL .. Key .. "/" .. ID
-            Get = HTTP:GetAsync(New)
+            New = url..key..id
+                request = HTTPS:RequestAsync({
+                Url = New,
+                Method = 'GET',
+                Headers = {},
+            })
         end
-    end
-    if request.StatusCode==200 then
-        New = url..key..id
-        request = HTTPS:RequestAsync({
-            Url = New,
-            Method = 'GET',
-            Headers = {},
-        })
     end
 end
 

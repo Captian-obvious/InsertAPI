@@ -43,7 +43,7 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
     if typeID == 0x01 or typeID == 0x1D then
         -- String, Bytecode
         for i = 1, sizeof do
-          properties[i] = BasicTypes.String(buffer)
+            properties[i] = BasicTypes.String(buffer)
         end
     elseif typeID == 0x02 then
         -- Boolean
@@ -72,7 +72,6 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
         -- UDim2
         local scaleX, scaleY = BasicTypes.RbxF32Array(buffer, sizeof), BasicTypes.RbxF32Array(buffer, sizeof)
         local offsetX, offsetY = BasicTypes.Int32Array(buffer, sizeof), BasicTypes.Int32Array(buffer, sizeof)
-    
         for i = 1, sizeof do
             properties[i] = UDim2.new(scaleX[i], offsetX[i], scaleY[i], offsetY[i])
         end
@@ -90,8 +89,8 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
     elseif typeID == 0x0A then
         -- Axes
         for i = 1, sizeof do
-          local byte = string.byte(buffer:read())
-          properties[i] = parseBitFlag(byte, AXES_BIT_FLAG)
+            local byte = string.byte(buffer:read())
+            properties[i] = parseBitFlag(byte, AXES_BIT_FLAG)
         end
     elseif typeID == 0x0B then
         -- BrickColor
@@ -138,24 +137,10 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
                 local R2 =	R0:Cross(R1)
                 matricies[i] = {R0, R1, R2}
             else
-                local r00, r01, r02 =
-                buffer:readNumber("<f"),
-                buffer:readNumber("<f"),
-                buffer:readNumber("<f")
-                local r10, r11, r12 =
-                buffer:readNumber("<f"),
-                buffer:readNumber("<f"),
-                buffer:readNumber("<f")
-                local r20, r21, r22 =
-                buffer:readNumber("<f"),
-                buffer:readNumber("<f"),
-                buffer:readNumber("<f")
-        
-                matricies[i] = {
-                  Vector3.new(r00, r10, r20),
-                  Vector3.new(r01, r11, r21),
-                  Vector3.new(r02, r12, r22)
-                }
+                local r00, r01, r02 = buffer:readNumber("<f"),buffer:readNumber("<f"),buffer:readNumber("<f")
+                local r10, r11, r12 = buffer:readNumber("<f"),buffer:readNumber("<f"),buffer:readNumber("<f")
+                local r20, r21, r22 = buffer:readNumber("<f"), buffer:readNumber("<f"), buffer:readNumber("<f")
+                matricies[i] = {Vector3.new(r00, r10, r20),Vector3.new(r01, r11, r21),Vector3.new(r02, r12, r22)}
             end
         end
         -- map interleaved position
@@ -171,12 +156,7 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
         -- Quaternion (i can be a little quicker here by handling it differently)
         local quaternions = {}
         for i = 1, sizeof do
-            quaternions[i] = {
-              x = buffer:readNumber("<f"),
-              y = buffer:readNumber("<f"),
-              z = buffer:readNumber("<f"),
-              w = buffer:readNumber("<f")
-            }
+            quaternions[i] = {x = buffer:readNumber("<f"),y = buffer:readNumber("<f"),z = buffer:readNumber("<f"),w = buffer:readNumber("<f")}
         end
     
         local cfX = BasicTypes.RbxF32Array(buffer, sizeof)
@@ -196,24 +176,15 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
     elseif typeID == 0x14 then
         -- Vector3int16
         for i = 1, sizeof do
-            properties[i] = Vector3int16.new(
-            buffer:readNumber("<i2"),
-            buffer:readNumber("<i2"),
-            buffer:readNumber("<i2")
-            )
+            properties[i] = Vector3int16.new(buffer:readNumber("<i2"),buffer:readNumber("<i2"),buffer:readNumber("<i2"))
         end
     elseif typeID == 0x15 then
         -- NumberSequence
         for i = 1, sizeof do
             local kpCount = buffer:readNumber("<I4")
             local kp = table.create(kpCount)
-      
             for i = 1, kp do
-              table.insert(kp, NumberSequenceKeypoint.new(
-              buffer:readNumber("<f"),
-              buffer:readNumber("<f"),
-              buffer:readNumber("<f")
-              ))
+                table.insert(kp, NumberSequenceKeypoint.new(buffer:readNumber("<f"),buffer:readNumber("<f"),buffer:readNumber("<f")))
             end
             properties[i] = NumberSequence.new(kp)
         end
@@ -224,16 +195,7 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
             local kp = table.create(kpCount)
       
             for i = 1, kp do
-                table.insert(kp, ColorSequenceKeypoint.new(
-                buffer:readNumber("<f"),
-                Color3.new(
-                buffer:readNumber("<f"),
-                buffer:readNumber("<f"),
-                buffer:readNumber("<f")
-                )
-                ))
-        
-                buffer:readNumber("<f")
+                table.insert(kp, ColorSequenceKeypoint.new(buffer:readNumber("<f"),Color3.new(buffer:readNumber("<f"),buffer:readNumber("<f"),buffer:readNumber("<f"))))buffer:readNumber("<f")
             end
             properties[i] = ColorSequence.new(kp)
         end
@@ -268,7 +230,6 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
             string.byte(b[i])
             )
         end
-  
     elseif typeID == 0x1B then
         -- Int64
         properties = BasicTypes.Int64Array(buffer, sizeof)

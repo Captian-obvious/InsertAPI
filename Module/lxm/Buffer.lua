@@ -9,7 +9,7 @@ local function Buffer(str, allowOverflows): Types.Buffer
     Stream.LastUnreadBytes = 0
     Stream.AllowOverflows = allowOverflows or true
 
-    function Stream.read(self, len, shift)
+    function Stream.read(self: Types.Buffer, len: number?, shift: boolean?): string
         local len = len or 1
         local shift = shift or true
         local dat = string.sub(self.Source, self.Offset + 1, self.Offset + len)

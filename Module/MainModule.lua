@@ -336,7 +336,7 @@ function InsertCloud:LoadAsset(url,key,id)
     Model.Name = id
     
     local New
-    local Get
+    local request
     local FindCache = ServerCache:FindFirstChild(id)
     if FindCache==nil then
         New = url..key..id
@@ -345,9 +345,9 @@ function InsertCloud:LoadAsset(url,key,id)
             Method = 'GET',
             Headers = {},
         })
-        if request.StatusCode==200 then
-            -- does somethin idk
-        end
+    end
+    if request.StatusCode==200 then
+        -- does somethin idk
     end
 end
 

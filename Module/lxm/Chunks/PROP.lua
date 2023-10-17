@@ -48,7 +48,7 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
     elseif typeID == 0x02 then
         -- Boolean
         for i = 1, sizeof do
-          properties[i] = buffer:read() ~= "\0"
+            properties[i] = buffer:read() ~= "\0"
         end
     elseif typeID == 0x03 then
         -- Int32
@@ -105,74 +105,69 @@ local function PROP(chunk: Types.Chunk, rbxm: Types.Rbxm)
         local g = BasicTypes.RbxF32Array(buffer, sizeof)
         local b = BasicTypes.RbxF32Array(buffer, sizeof)
         for i = 1, sizeof do
-          properties[i] = Color3.new(r[i], g[i], b[i])
+            properties[i] = Color3.new(r[i], g[i], b[i])
         end
     elseif typeID == 0x0D then
         -- Vector2
         local x = BasicTypes.RbxF32Array(buffer, sizeof)
         local y = BasicTypes.RbxF32Array(buffer, sizeof)
         for i = 1, sizeof do
-          properties[i] = Vector2.new(x[i], y[i])
+            properties[i] = Vector2.new(x[i], y[i])
         end
     elseif typeID == 0x0E then
-      -- Vector3
-      local x = BasicTypes.RbxF32Array(buffer, sizeof)
-      local y = BasicTypes.RbxF32Array(buffer, sizeof)
-      local z = BasicTypes.RbxF32Array(buffer, sizeof)
-  
-      for i = 1, sizeof do
-        properties[i] = Vector3.new(x[i], y[i], z[i])
-      end
-  
-      -- elseif typeID == 0x0F then
-      -- Vector2int16?
-  
-    elseif typeID == 0x10 then
-      --CFrame
-      local matricies = table.create(sizeof)
-  
-      for i = 1, sizeof do
-        local rawOrientation = string.byte(buffer:read())
-        if rawOrientation > 0 then
-          local orientID = rawOrientation - 1
-          local R0 = Vector3.fromNormalId(orientID / 6)
-          local R1 = Vector3.fromNormalId(orientID % 6)
-          local R2 =	R0:Cross(R1)
-  
-          matricies[i] = {R0, R1, R2}
-        else
-          local r00, r01, r02 =
-          buffer:readNumber("<f"),
-          buffer:readNumber("<f"),
-          buffer:readNumber("<f")
-          local r10, r11, r12 =
-          buffer:readNumber("<f"),
-          buffer:readNumber("<f"),
-          buffer:readNumber("<f")
-          local r20, r21, r22 =
-          buffer:readNumber("<f"),
-          buffer:readNumber("<f"),
-          buffer:readNumber("<f")
-  
-          matricies[i] = {
-            Vector3.new(r00, r10, r20),
-            Vector3.new(r01, r11, r21),
-            Vector3.new(r02, r12, r22)
-          }
+        -- Vector3
+        local x = BasicTypes.RbxF32Array(buffer, sizeof)
+        local y = BasicTypes.RbxF32Array(buffer, sizeof)
+        local z = BasicTypes.RbxF32Array(buffer, sizeof)
+    
+        for i = 1, sizeof do
+            properties[i] = Vector3.new(x[i], y[i], z[i])
         end
-      end
-  
-      -- map interleaved position
-      local cfX = BasicTypes.RbxF32Array(buffer, sizeof)
-      local cfY = BasicTypes.RbxF32Array(buffer, sizeof)
-      local cfZ = BasicTypes.RbxF32Array(buffer, sizeof)
-  
-      for i = 1, sizeof do
-        local thisMatrix = matricies[i]
-        local pos = Vector3.new(cfX[i], cfY[i], cfZ[i])
-        properties[i] = CFrame.fromMatrix(pos, thisMatrix[1], thisMatrix[2], thisMatrix[3])
-      end
-  
+    
+        -- elseif typeID == 0x0F then
+        -- Vector2int16?
+    elseif typeID == 0x10 then
+        --CFrame
+        local matricies = table.create(sizeof)
+        for i = 1, sizeof do
+            local rawOrientation = string.byte(buffer:read())
+            if rawOrientation > 0 then
+              local orientID = rawOrientation - 1
+              local R0 = Vector3.fromNormalId(orientID / 6)
+              local R1 = Vector3.fromNormalId(orientID % 6)
+              local R2 =	R0:Cross(R1)
+      
+              matricies[i] = {R0, R1, R2}
+            else
+              local r00, r01, r02 =
+              buffer:readNumber("<f"),
+              buffer:readNumber("<f"),
+              buffer:readNumber("<f")
+              local r10, r11, r12 =
+              buffer:readNumber("<f"),
+              buffer:readNumber("<f"),
+              buffer:readNumber("<f")
+              local r20, r21, r22 =
+              buffer:readNumber("<f"),
+              buffer:readNumber("<f"),
+              buffer:readNumber("<f")
+      
+              matricies[i] = {
+                Vector3.new(r00, r10, r20),
+                Vector3.new(r01, r11, r21),
+                Vector3.new(r02, r12, r22)
+              }
+            end
+        end
+        -- map interleaved position
+        local cfX = BasicTypes.RbxF32Array(buffer, sizeof)
+        local cfY = BasicTypes.RbxF32Array(buffer, sizeof)
+        local cfZ = BasicTypes.RbxF32Array(buffer, sizeof)
+        for i = 1, sizeof do
+            local thisMatrix = matricies[i]
+            local pos = Vector3.new(cfX[i], cfY[i], cfZ[i])
+            properties[i] = CFrame.fromMatrix(pos, thisMatrix[1], thisMatrix[2], thisMatrix[3])
+        end
     elseif typeID == 0x11 then
       -- Quaternion (i can be a little quicker here by handling it differently)
       local quaternions = {}

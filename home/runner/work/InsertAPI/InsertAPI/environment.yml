@@ -1,4 +1,4 @@
-name: example-environment
+name: insert-cloud-environment
 
 dependencies:
   - python=3.4

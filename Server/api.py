@@ -56,10 +56,16 @@ def download():
     <body>
         <h1 class='red1 center ta_c'>InsertAPI Server: </h1>
         <h2 class='red3 center ta_c'>Download Asset Request Recieved.</h2>
-        <p class='red1 center ta_c'>Asset Location: <a href='/assets/v1/"""+str(theid)+"""'>/assets/v1/"""+str(theid)+"""</a></p>
+        <p class='red1 center ta_c'>Asset Location: <a href='/api/assets/v1/"""+str(theid)+"""'>/api/assets/v1/"""+str(theid)+"""</a></p>
     </body>
 </html>
 """
+##end
+
+#COMPILER
+@app.route('/api/v1/asset/')
+def compile():
+    
 ##end
 
 #server stuff
@@ -69,7 +75,7 @@ class insertserver:
         r = requests.get(url)
         if (r.status_code==200):
             rawData = r.content
-            asset = open('assets/v1/'+str(assetid), "wb")
+            asset = open('api/assets/v1/'+str(assetid), "wb")
             asset.write(bytearray(rawData))
             class ret:
                 Content = asset

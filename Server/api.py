@@ -1,5 +1,5 @@
 #MODULES & FLASK
-import base64,os,sys,requests,robloxapi
+import base64,compiler,os,sys,requests,robloxapi
 from flask import Flask,request
 
 #DEFINE APP
@@ -124,8 +124,8 @@ class insertserver:
             ##end
             return ret
         else:
-            print('REQUEST_ERROR: '+str(REQUEST.status_code))
-            return {'STATUS_CODE':REQUEST.status_code,'ERROR_MESSAGE':'REQUEST_ERROR: '+str(REQUEST.status_code)}
+            print('REQUEST_ERROR: '+str(r.status_code))
+            return {'STATUS_CODE':r.status_code,'ERROR_MESSAGE':'REQUEST_ERROR: '+str(r.status_code)}
         ##endif
     ##end
     def compileAsset(asset):

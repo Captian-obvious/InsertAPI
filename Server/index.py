@@ -26,7 +26,7 @@ def index():
 #DOWNLOADER
 @app.route('/api/')
 def download():
-    
+    insertserver.downloader.downloadAsset(theid)
 ##end
 
 #Assets

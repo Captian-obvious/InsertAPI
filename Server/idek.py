@@ -66,9 +66,8 @@ def download():
 #Assets
 @app.route('/api/v1/asset/')
 def compiler():
-
+    return True
 ##end
-
 #server stuff
 def getParams(url):
     if (len(url.split('?'))>1):

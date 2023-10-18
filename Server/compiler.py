@@ -1,7 +1,9 @@
 import base64,os,sys,rbxm,requests,robloxapi
 
 def parseObject():
+    objectJSON = {}
     if isinstance(object, rbxm.UnionOperation):
+        
         parts = object.Parts
     ##endif
 ##end

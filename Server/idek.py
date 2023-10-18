@@ -1,6 +1,6 @@
 #IMPORTS
 import base64,os,sys,rbxm,requests,robloxapi
-from flask import Flask,request
+from flask import Flask,request,jsonify
 #APP DEFINITION
 app = Flask(__name__)
 #APP SCRIPT
@@ -92,15 +92,15 @@ class insertserver:
                 ##end
                 return ret
             else:
-                print('REQUEST_ERROR: '+str(REQUEST.status_code))
+                print('REQUEST_ERROR: '+str(r.status_code))
                 class ret:
                     class Content:
-                        ErrorMessage = REQUEST.status
-                        STATUS_CODE = REQUEST.status_code
+                        ErrorMessage = r.status
+                        STATUS_CODE = r.status_code
                     ##end
                     Success = False
                 ##end
-                return {'STATUS_CODE':REQUEST.status_code,'ERROR_MESSAGE':'REQUEST_ERROR: '+str(REQUEST.status_code)}
+                return {'STATUS_CODE':r.status_code,'ERROR_MESSAGE':'REQUEST_ERROR: '+str(r.status_code)}
             ##endif
         ##end
     ##end

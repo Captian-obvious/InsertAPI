@@ -1,5 +1,5 @@
 #IMPORTS
-import base64,os,sys,rbxm,requests,robloxapi
+import base64,compiler,os,sys,rbxm,requests,robloxapi
 from flask import Flask,request,jsonify
 #APP DEFINITION
 app = Flask(__name__)

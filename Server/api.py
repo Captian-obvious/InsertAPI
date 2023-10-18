@@ -1,47 +1,46 @@
-#IMPORTS
-import base64,compiler,os,sys,rbxm,requests,robloxapi
+#MODULES & FLASK
+import base64,os,sys,requests,robloxapi
 from flask import Flask,request
-#APP DEFINITION
+
+#DEFINE APP
 app = Flask(__name__)
-#APP SCRIPT
-#INDEX LANDING PAGE
+
+#DEFINE ROUTES / VIEWS
+
+#INDEX / LANDING PAGE
 @app.route('/')
 def index():
     return """
-    <!DOCTYPE html>
-    <html>
-        <head>
-            <title>Insert API - LNDP</title>
-            <link rel='icon' href='/images/favicon.ico'/>
-            <link rel='stylesheet' href='/css/styles-main.css'/>
-        </head>
-        <body>
-            <h1 class='red1 center ta_c'>Insert API Server:</h1>
-            <p class='red1 center ta_c'>IDK what to put here. (Landing Page)</p>
-        </body>
-    </html>
-    """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Insert Cloud API - Welcome</title>
+        <link rel='icon' href='/images/favicon.ico'/>
+        <link rel='stylesheet' href='/css/styles-main.css'/>
+    </head>
+    <body>
+	<div id='page_content' class='center ta_c a_up_fade'>
+	    <h1 class='red1 center ta_c'>Welcome!</h1>
+	    <h2 class='red1 center ta_c'>Welcome to the Insert Cloud landing page!</h2>
+	    <h3 class='red1 center ta_c'>Here you will find links to the apiReference documents</h3>
+	    <p class='red1 center ta_c'></p>
+	</div>
+    </body>
+</html>
+"""
 ##end
 
-#DOWNLOADER
+#APP PAGES
 @app.route('/api/')
-def download():
-    theid = None
-    asset_type = None
-    myQuery = getParams(str(request.url))
+def api():
+    assetid = None
+    myQuery = getParams(request.url)
     if (myQuery!=None):
-        idq = str(myQuery[0])
-        tyq = None
-        if (len(myQuery)>1):
-            tyq = str(myQuery[1])
-        ##endif
+        idq = myQuery[0]
         if (idq!=None):
-            if (tyq==None or tyq=='type=model'):
-                theid = int(idq.split('=')[1])
-                asset_type = 'rbxm'
-                if (theid!=None):
-                    insertserver.downloadAsset(theid)
-                ##endif
+            assetid = int(idq.split('=')[1])
+            if (assetid!=None):
+                insertserver.downloadAsset(assetid)
             ##endif
         ##endif
     ##endif
@@ -54,38 +53,50 @@ def download():
         <link rel='stylesheet' href='/css/styles-main.css'/>
     </head>
     <body>
-        <h1 class='red1 center ta_c'>InsertAPI Server: </h1>
-        <h2 class='red3 center ta_c'>Download Asset Request Recieved.</h2>
-        <p class='red1 center ta_c'>Asset Location: <a href='/api/assets/v1/"""+str(theid)+"""'>/api/assets/v1/"""+str(theid)+"""</a></p>
+	<div id='page_content' class='center ta_c'>
+	    <h1 class='red1 center ta_c'>Insert Cloud API: Asset Downloader</h1>
+	    <h2 class='red2 center ta_c'>Download Asset Request Recieved.</h2>
+	    
+	</div>
     </body>
 </html>
 """
 ##end
-
-#PARSER & DOWNLOAD API
 @app.route('/api/v1/asset/')
-def Parse():
-    theid = None
-    asset_type = None
-    myQuery = getParams(str(request.url))
+def asset():
+    assetid = None
+    myQuery = getParams(request.url)
     if (myQuery!=None):
-        idq = str(myQuery[0])
-        tyq = None
-        if (len(myQuery)>1):
-            tyq = str(myQuery[1])
-        ##endif
+        idq = myQuery[0]
         if (idq!=None):
-            if (tyq==None or tyq=='type=model'):
-                theid = int(idq.split('=')[1])
-                if (theid!=None):
-                    asset = insertserver.downloadAsset(theid)
-                    if (asset.Success!=False):
-                        return insertserver.compileAsset(asset.Content)
-                    ##endif
+            assetid = int(idq.split('=')[1])
+            if (assetid!=None):
+                asset = insertserver.downloadAsset(assetid)
+                if (asset!=None and asset.Success==True):
+                    return asset.Content
                 ##endif
             ##endif
         ##endif
     ##endif
+##end
+@app.route('/docs/')
+def docs():
+    return """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Insert Cloud API - API Reference</title>
+        <link rel='icon' href='/images/favicon.ico'/>
+        <link rel='stylesheet' href='/css/styles-main.css'/>
+    </head>
+    <body>
+	<div id='page_content' class='center ta_c a_up_fade'>
+	    <h1 class='red1 center ta_c'>Welcome!</h1>
+	    <h2 class='red1 center ta_c'>Welcome to the Insert Cloud API Reference documents!</h2>
+	</div>
+    </body>
+</html>
+"""
 ##end
 
 #server stuff
@@ -105,8 +116,10 @@ class insertserver:
             rawData = r.content
             asset = open('api/assets/v1/'+str(assetid), "wb")
             asset.write(bytearray(rawData))
+            assetDC = open('api/assets/v1/'+str(assetid),'rb')
+            assetData = bytearray(assetDC.read())
             class ret:
-                Content = asset
+                Content = assetData
                 Success = True
             ##end
             return ret

@@ -65,10 +65,21 @@ def download():
 #PARSER
 @app.route('/api/v1/asset/')
 def Parse():
-    
+    myQuery = getParams(str(request.url))
+    if (myQuery!=None):
+        
+    ##endif
 ##end
 
 #server stuff
+def getParams(url):
+    if (len(url.split('?'))>1):
+        query = url.split('?')[1]
+        params = query.split('&')
+        return params
+    ##endif
+##end
+
 class insertserver:
     def downloadAsset(assetid):
         url = 'https://assetdelivery.roblox.com/v1/asset/?id='+str(assetid)

@@ -62,9 +62,9 @@ def download():
 """
 ##end
 
-#COMPILER
+#PARSER
 @app.route('/api/v1/asset/')
-def compile():
+def Parse():
     
 ##end
 

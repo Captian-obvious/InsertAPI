@@ -1,5 +1,5 @@
 #IMPORTS
-import base64,os,sys,rbxm,requests,robloxapi
+import base64,compiler,os,sys,rbxm,requests,robloxapi
 from flask import Flask,request
 #APP DEFINITION
 app = Flask(__name__)
@@ -117,5 +117,6 @@ class insertserver:
     ##end
     def compileAsset(asset):
         data = asset.Content
+        return compiler.compileAsset(data)
     ##end
 ##end

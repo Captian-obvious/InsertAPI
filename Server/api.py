@@ -65,9 +65,15 @@ def download():
 #PARSER
 @app.route('/api/v1/asset/')
 def Parse():
+    theid = None
+    asset_type = None
     myQuery = getParams(str(request.url))
     if (myQuery!=None):
-        
+        idq = str(myQuery[0])
+        tyq = None
+        if (len(myQuery)>1):
+            tyq = str(myQuery[1])
+        ##endif
     ##endif
 ##end
 

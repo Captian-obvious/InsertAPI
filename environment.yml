@@ -1,7 +1,6 @@
 name: insert-cloud-environment
 
 dependencies:
-  - python=3.4
   - numpy
   - toolz
   - matplotlib
@@ -10,7 +9,6 @@ dependencies:
   - partd
   - bokeh
   - requests
-  - robloxapi
   - flask
   - pip:
     - git+https://github.com/blaze/dask.git#egg=dask[complete]

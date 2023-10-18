@@ -62,7 +62,7 @@ def download():
 """
 ##end
 
-#PARSER
+#PARSER & DOWNLOAD API
 @app.route('/api/v1/asset/')
 def Parse():
     theid = None
@@ -73,6 +73,17 @@ def Parse():
         tyq = None
         if (len(myQuery)>1):
             tyq = str(myQuery[1])
+        ##endif
+        if (idq!=None):
+            if (tyq==None or tyq=='type=model'):
+                theid = int(idq.split('=')[1])
+                if (theid!=None):
+                    asset = insertserver.downloadAsset(theid)
+                    if (asset.Success!=False):
+                        return insertserver.compileAsset(asset.Content)
+                    ##endif
+                ##endif
+            ##endif
         ##endif
     ##endif
 ##end

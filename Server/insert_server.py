@@ -1,3 +1,4 @@
+import base64,os,sys,requests
 class insertserver:
     class downloader:
         def downloadAsset(assetid):

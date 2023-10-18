@@ -26,7 +26,41 @@ def index():
 #DOWNLOADER
 @app.route('/api/')
 def download():
-    insertserver.downloader.downloadAsset(theid)
+    theid = None
+    asset_type = None
+    myQuery = getParams(str(request.url))
+    if (myQuery!=None):
+        idq = str(myQuery[0])
+        tyq = None
+        if (len(myQuery)>1):
+            tyq = str(myQuery[1])
+        ##endif
+        if (idq!=None):
+            if (tyq==None or tyq=='type=model'):
+                theid = int(idq.split('=')[1])
+                asset_type = 'rbxm'
+                if (theid!=None):
+                    insertserver.downloadAsset(theid)
+                ##endif
+            ##endif
+        ##endif
+    ##endif
+    return """
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Insert Cloud API - Asset Downloader</title>
+        <link rel='icon' href='/images/favicon.ico'/>
+        <link rel='stylesheet' href='/css/styles-main.css'/>
+        <link rel='stylesheet' href='/css/themes.css'/>
+    </head>
+    <body>
+        <h1 class='red2'>InsertAPI Server: </h1>
+        <h2 class='red1'>Download Asset Request Recieved.</h2>
+        <p class='red1'>Asset Location: <a href='/assets/v1/"""+str(theid)+"""'>/assets/v1/"""+str(theid)+"""</a></p>
+    </body>
+</html>
+"""
 ##end
 
 #Assets

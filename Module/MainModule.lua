@@ -70,11 +70,11 @@ function ColorFunc(Val, Type)
         local Color = BrickColor.new(Val)
         return Color
     end
-    if Val.r <= 1 and Val.g <= 1 and Val.b <= 1 then
-        local Color = Color3.new(Val.r, Val.g, Val.b)
+    if Val.R <= 1 and Val.G <= 1 and Val.B <= 1 then
+        local Color = Color3.new(Val.R, Val.G, Val.B)
         return Color
     else
-        local Color = Color3.new(Val.r / 255, Val.g / 255, Val.b / 255)
+        local Color = Color3.new(Val.R / 255, Val.G / 255, Val.B / 255)
         return Color
     end
 end
@@ -82,17 +82,17 @@ end
 ValueTypes = {
     ["CFrame"] = function(Val, Type)
         local Pos = Val.Position
-        local Rot = Val.LookVector
-        local CF = CFrame.new(Pos, Rot)
-        return Val
+        local Rot = Val.Rotation
+        local CF = CFrame.fromMatrix(Pos, Val.XVector, Val.YVector, Val.ZVector)
+        return CF
     end,
     ["Vector2"] = function(Val, Type)
         local Vect = Vector2.new(Val.X, Val.Y)
-        return Val
+        return Vect
     end,
     ["Vector3"] = function(Val, Type)
         local Vect = Vector3.new(Val.X, Val.Y, Val.Z)
-        return Val
+        return Vect
     end,
     ["BrickColor"] = function(Val, Type)
         local Color = BrickColor.new(Val)
@@ -137,17 +137,16 @@ ValueTypes = {
     end,
     ["PhysicalProperties"] = function(Val, Type)
         local number = Val
-        if number.custom_physics == false then
-            return nil
-        end
-        local Physical =
-            PhysicalProperties.new(
-            number.density or 1,
-            number.friction or 1,
-            number.elasticity or 1,
-            number.friction_weight or 1,
-            number.elasticity_weight or 1
-        )
+        --if number == nil then
+        --	return nil
+        --end
+        --local Physical = PhysicalProperties.new(
+        --	number[1] or 1,
+        --	number[2] or 1,
+        --	number[3] or 1,
+        --	number[4] or 1,
+        --	number[5] or 1
+        --)
         return Val
     end,
     ["Ref"] = function(Val, Type, Refs)
@@ -174,7 +173,7 @@ local ClassTypes = {
     ["MeshPart"] = function(ClName, ParentObj, Inst, Properties)
         local Object = Instance.new("Part")
         Object.Parent = ParentObj
-        local OrigSize = CompileValue("Size", Inst.Properties.Size)
+        local OrigSize = CompileValue("Size", Inst.Properties.size)
         local InitSize = CompileValue("MeshSize", Inst.Properties.MeshSize)
         local MeshID = CompileValue("MeshId", Inst.Properties.MeshID)
         local TextID = CompileValue("TextureId", Inst.Properties.TextureID)
@@ -287,15 +286,15 @@ function LoadProps(Objects, Refs)
     for Object, Inst in pairs(Objects) do
         for x, Property in pairs(Inst.Properties) do
             local function iter()
-                x = string.sub(x, 0, 1) .. string.sub(x, 2)
+                x = string.upper(string.sub(x, 0, 1)) .. string.sub(x, 2)
                 if x == "Color3uint8" then
                     x = "Color"
                 elseif x == "Source" then
-                    Object.LOAD.Value = Property
-                elseif x == "Disabled" and Property == false then
+                    Object.LOAD.Value = Property.value
+                elseif x == "Disabled" and Property.value == false then
                     Object.IsDisabled.Value = false
                     if _Settings.DisableScripts == false then
-                        Object.Disabled = Property
+                        Object.Disabled = Property.value
                     end
                 elseif x == "Locked" and _Settings.UnlockParts == true then
                     Object.Locked = false
